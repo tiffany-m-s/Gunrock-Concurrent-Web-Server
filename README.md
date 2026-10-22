@@ -1,17 +1,22 @@
-# Gunrock Concurrent Web Server
+## Gunrock Concurrent Web Server
 
-This web server is a simple server used in ECS 150 for teaching about
-multi-threaded programming and operating systems. This version of the
-server can only handle one client at a time and simply serves static
-files. Also, it will close each connection after reading the request
+# Purpose
+This web server is a simple server from UC Davis ECS 150 for learning about
+multi-threaded programming and operating systems. The original version of the
+server could only handle one client at a time and simply served static
+files. Also, it closed each connection after reading the request
 and responding, but generally is still HTTP 1.1 compliant.
 
-This server was written by Sam King from UC Davis and is actively
-maintained by Sam as well. The `http_parse.c` file was written by
-[Ryan Dahl](https://github.com/ry) and is licensed under the BSD
-license by Ryan. This programming assignment is from the
-[OSTEP](http://ostep.org) textbook (tip of the hat to the authors for
-writing an amazing textbook).
+The original README file was written by Sam King from UC Davis. I then modified
+it to clarify the purpose of its inclusion on Github. The original files
+were uploaded and kept on Google Drive then reuploaded to Github, though the 
+earlier versions of FileService.cpp went missing.
+
+# Credit
+The original server was written by Sam King from UC Davis. The 
+`http_parse.c` file was written by [Ryan Dahl](https://github.com/ry) 
+and is licensed under the BSD license by Ryan. This programming 
+assignment is from the [OSTEP](http://ostep.org) textbook.
 
 # Quickstart
 To compile and run the server, open a terminal and execute the following commands:
@@ -35,7 +40,7 @@ $ # test out a POST, which isn't supported currently (405 status code)
 $ curl -v -X POST http://localhost:8080/hello_world.html
 ```
 
-We also included a full website that you can use for testing, try pointing your browser to: `http://localhost:8080/bootstrap.html`
+Full website for testing, try pointing your browser to: `http://localhost:8080/bootstrap.html`
 
 # Overview
 
@@ -56,93 +61,6 @@ Useful reading from [OSTEP](http://ostep.org) includes:
 - [Producer-consumer relationships](http://pages.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf)
 - [Server concurrency architecture](http://pages.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf)
 
-# HTTP Background
-
-Before describing what you will be implementing in this project, we will
-provide a very brief overview of how a classic web server works, and the HTTP
-protocol (version 1.1) used to communicate with it; although web browsers and
-servers have [evolved a lot over the
-years](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Evolution_of_HTTP),
-the old versions still work and give you a good start in understanding how
-things work. Our goal in providing you with a basic web server is that you can
-be shielded from learning all of the details of network connections and the
-HTTP protocol needed to do the project; however, the network code has been
-greatly simplified and is fairly understandable should you choose to to study
-it.
-
-Classic web browsers and web servers interact using a text-based protocol
-called **HTTP** (**Hypertext Transfer Protocol**). A web browser opens a
-connection to a web server and requests some content with HTTP. The web server
-responds with the requested content and closes the connection. The browser
-reads the content and displays it on the screen.
-
-HTTP is built on top of the **TCP/IP** protocol suite provided by the
-operating system. Together, TCP and IP ensure that messages are routed to
-their correct destination, get from source to destination reliably in the face
-of failure, and do not overly congest the network by sending too many messages
-at once, among other features. To learn more about networks, take a networking
-class (or many!), or read [this free book](https://book.systemsapproach.org).
-
-Each piece of content on the web server is associated with a file in the
-server's file system. The simplest is *static* content, in which a client
-sends a request just to read a specific file from the server. Slightly more
-complex is *dynamic* content, in which a client requests that an executable
-file be run on the web server and its output returned to the client.
-Each file has a unique name known as a **URL** (**Universal Resource
-Locator**). 
-
-As a simple example, let's say the client browser wants to fetch static
-content (i.e., just some file) from a web server running on some machine.  The
-client might then type in the following URL to the browser:
-`http://www.cs.wisc.edu/index.html`. This URL identifies that the HTTP
-protocol is to be used, and that an HTML file in the root directory (`/`) of
-the web server called `index.html` on the host machine `www.cs.wisc.edu`
-should be fetched.
-
-The web server is not just uniquely identified by which machine it is running
-on but also the **port** it is listening for connections upon. Ports are a
-communication abstraction that allow multiple (possibly independent) network
-communications to happen concurrently upon a machine; for example, the web
-server might be receiving an HTTP request upon port 80 while a mail server is
-sending email out using port 25. By default, web servers are expected to run
-on port 80 (the well-known HTTP port number), but sometimes (as in this
-project), a different port number will be used. To fetch a file from a web
-server running at a different port number (say 8000), specify the port number
-directly in the URL, e.g., `http://www.cs.wisc.edu:8000/index.html`.
-
-# The HTTP Request
-
-When a client (e.g., a browser) wants to fetch a file from a machine, the
-process starts by sending a machine a message. But what exactly is in the body
-of that message? These *request contents*, and the subsequent *reply
-contents*, are specified precisely by the HTTP protocol.
-
-Let's start with the request contents, sent from the web browser to the
-server. This HTTP request consists of a request line, followed by zero or more
-request headers, and finally an empty text line. A request line has the form:
-`method uri version`. The `method` is usually `GET`, which tells the web
-server that the client simply wants to read the specified file; however, other
-methods exist (e.g., `POST`). The `uri` is the file name, and perhaps optional
-arguments (in the case of dynamic content). Finally, the `version` indicates
-the version of the HTTP protocol that the web client is using (e.g.,
-HTTP/1.1).
-
-The HTTP response (from the server to the browser) is similar; it consists of
-a response line, zero or more response headers, an empty text line, and
-finally the interesting part, the response body. A response line has the form
-version `status message`. The `status` is a three-digit positive integer that
-indicates the state of the request; some common states are `200` for `OK`,
-`403` for `Forbidden` (i.e., the client can't access that file), and `404` for
-`File Not Found` (the famous error). Two important lines in the header are
-`Content-Type`, which tells the client the type of the content in the response
-body (e.g., HTML or gif or otherwise) and `Content-Length`, which indicates
-the file size in bytes.
-
-For this project, you don't really need to know this information about HTTP
-unless you want to understand the details of the code we have given you. You
-will not need to modify any of the procedures in the web server that deal with
-the HTTP protocol or network connections. However, it's always good to learn
-more, isn't it?
 
 # A Basic Web Server
 
@@ -177,7 +95,7 @@ server, it may trip an assertion in the server causing it to exit. We do not
 expect you to fix these problems (though you can, if you like, you know, for
 fun).
 
-# Finally: Some New Functionality!
+# Instructions
 
 In this project, you will be adding one key piece of functionality to the
 basic web server: you will make the web server multi-threaded. 
@@ -340,15 +258,4 @@ To make this server multithreaded, you're going to need to modify the main `gunr
 - **HttpUtils** - Simple utility functions for working with HTTP data
 - **MyServerSocket** - High level abstraction on top of server sockets, accepts connections from new clients
 - **MySocket** - High level abstraction on top of sockets, used by the framework to read requests and write responses
-
-## Autograding
-
-We aren't providing test cases for this project, so an important part
-of the project is developing your own test cases. We'll try to give
-descriptive text that explains what an autograded test case tests, but
-it won't be perfect. Our suggestion is to invest in an extensive test
-suite that you write yourself to exercise your server.
-
-When you submit your project via gradescope, you will turn in two
-files: `gunrock.cpp` and `FileService.cpp`.
 
