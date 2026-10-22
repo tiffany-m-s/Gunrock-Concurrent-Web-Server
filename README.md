@@ -64,11 +64,6 @@ Useful reading from [OSTEP](http://ostep.org) includes:
 
 # A Basic Web Server
 
-The code for the web server is available in this repository.  You can compile
-the files herein by simply typing `make`. Compile and run this basic web
-server before making any changes to it! `make clean` removes .o files and
-executables and lets you do a clean build.
-
 When you run this basic web server, you need to specify the port number that
 it will listen on; ports below number 1024 are *reserved* (see the list
 [here](https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml))
@@ -86,14 +81,13 @@ from a web browser (running on the same or a different machine), use the url
 server on the same machine, you can just use the hostname `localhost` as a
 convenience, e.g., `localhost:8003/favorite.html`.
 
-To make the project a bit easier, we are providing you with a minimal web
+To make the project a bit easier, you are originally provided with a minimal web
 server, consisting of only a few hundred lines of C++ code. As a result, the
 server is limited in its functionality; it does not handle any HTTP requests
 other than `GET` and `HEAD`, and understands only a few content types. This web server is also
 not very robust; for example, if a web client closes its connection to the
-server, it may trip an assertion in the server causing it to exit. We do not
-expect you to fix these problems (though you can, if you like, you know, for
-fun).
+server, it may trip an assertion in the server causing it to exit. It is not
+expected that you to fix these problems.
 
 # Instructions
 
