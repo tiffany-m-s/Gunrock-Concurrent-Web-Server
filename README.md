@@ -1,5 +1,3 @@
-## Gunrock Concurrent Web Server
-
 # Purpose
 This web server is a simple server from UC Davis ECS 150 for learning about
 multi-threaded programming and operating systems. The original version of the
